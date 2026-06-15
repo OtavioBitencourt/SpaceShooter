@@ -1,0 +1,26 @@
+#pragma once
+
+#include <SFML/Graphics.hpp>
+#include "Entities/Entity.hpp"
+
+class Asteroid : public Entity
+{
+    CLASS_NAME(Asteroid)
+
+public: 
+    Asteroid(const sf::Vector2f& position, const sf::Vector2f& direction);
+
+    void Update(float deltaTime);
+    void Render(sf::RenderWindow& window); 
+
+    sf::Vector2f GetPosition() const;
+    float GetRadius() const;
+
+    void OnCollision(Entity* other) override;
+
+private: 
+    sf::CircleShape m_Shape;
+    sf::Vector2f m_Direction; 
+    float m_Speed;
+    
+};
