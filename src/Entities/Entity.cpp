@@ -1,14 +1,5 @@
 #include "Entities/Entity.hpp"
 
-void Entity::Update(float deltaTime)
-{
-
-}
-
-void Entity::Render(sf::RenderWindow& window)
-{
-    
-}
 
 void Entity::Destroy()
 {
@@ -25,13 +16,12 @@ void Entity::OnCollision(Entity* other)
     
 }
 
-void Entity::Destroy()
+sf::Vector2f Entity::GetPosition() const
 {
-    m_IsPendingDestroy = true;
+    return sf::Vector2f();
 }
 
-bool Entity::IsPendingDestroy() const
+float Entity::GetRadius() const
 {
-    return m_IsPendingDestroy;
+    return 0.f;
 }
-

@@ -13,10 +13,12 @@ public:
     void Update(float deltaTime);
     void Render(sf::RenderWindow& window); 
 
-    sf::Vector2f GetPosition() const;
-    float GetRadius() const;
+    sf::Vector2f GetPosition() const override;
+    float GetRadius() const override;
 
     void OnCollision(Entity* other) override;
+
+    EntityType GetType() const override;
 
 private: 
     sf::CircleShape m_Shape;

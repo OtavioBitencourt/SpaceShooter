@@ -1,4 +1,5 @@
 #include "Entities/Asteroid.hpp"
+#include <iostream>
 
 Asteroid::Asteroid(const sf::Vector2f& position, const sf::Vector2f& direction)
     : m_Direction(direction),
@@ -37,4 +38,9 @@ float Asteroid::GetRadius() const
 void Asteroid::OnCollision(Entity* other)
 {
     Destroy();
+}
+
+EntityType Asteroid::GetType() const
+{
+    return EntityType::Asteroid;
 }

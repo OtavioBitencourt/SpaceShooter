@@ -112,30 +112,35 @@ void Player::Update(float deltaTime, const sf::Vector2f& targetPosition)
     }
 
    
-
-
-
-
-    // for(size_t bulletIndex = 0; bulletIndex < m_Bullets.size(); bulletIndex++)
-    // {
-    //     for(size_t asteroidIndex = 0; asteroidIndex < m_Asteroids.size(); asteroidIndex++)
-    //     {
-    //         float distance = Math::Distance(m_Bullets[bulletIndex].GetPosition(), m_Asteroids[asteroidIndex].GetPosition());
-    //         float radiusSum = m_Bullets[bulletIndex].GetRadius() + m_Asteroids[asteroidIndex].GetRadius();
-
-    //         if (distance < radiusSum)
-    //         {   
-    //             m_Bullets.erase(m_Bullets.begin() + bulletIndex);
-    //             m_Asteroids.erase(m_Asteroids.begin() + asteroidIndex);
-                
-    //             break;
-    //         }
-    //     }
-    // }
 }
+
+
+void Player::Update(float deltaTime)
+{
+    Update(deltaTime, m_Shape.getPosition());
+}
+
 
 void Player::Render(sf::RenderWindow& window)
 {
     window.draw(m_Shape);
+    
+}
 
+
+EntityType Player::GetType() const
+{
+    return EntityType::Player;
+}
+
+
+sf::Vector2f Player::GetPosition() const
+{
+    return m_Shape.getPosition();
+}
+
+
+float Player::GetRadius() const
+{
+    return m_Shape.getRadius();
 }

@@ -9,6 +9,7 @@ namespace Math
     {
         return std::sqrt(vector.x * vector.x + vector.y * vector.y);
     }
+    
 
     inline sf::Vector2f Normalize(const sf::Vector2f& vector)
     {
@@ -21,10 +22,12 @@ namespace Math
         return vector / length;
     }
 
+
     inline float Distance(const sf::Vector2f& a, const sf::Vector2f& b)
     {
         return Length(b - a);
     }
+
 
     static sf::Vector2f MoveTowards(const sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime)
     {

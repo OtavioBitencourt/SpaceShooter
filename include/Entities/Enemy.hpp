@@ -15,8 +15,8 @@ public:
 
     void TakeDamage(int amount);
 
-    float GetRadius() const;
-    sf::Vector2f GetPosition() const;
+    float GetRadius() const override;
+    sf::Vector2f GetPosition() const override;
 
 private:
     sf::CircleShape m_Shape;

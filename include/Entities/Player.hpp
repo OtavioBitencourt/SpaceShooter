@@ -18,8 +18,14 @@ public:
     Player(EntityManager* entityManager);
 
     void Update(float deltaTime, const sf::Vector2f& targetPosition);
+    void Update(float deltaTime) override;
 
     void Render(sf::RenderWindow& window) override;
+
+    EntityType GetType() const override;
+
+    sf::Vector2f GetPosition() const override;
+    float GetRadius() const override;
 
    
 

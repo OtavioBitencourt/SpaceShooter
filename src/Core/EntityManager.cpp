@@ -1,103 +1,100 @@
 #include "Core/EntityManager.hpp"
 #include "Utils/Math.hpp"
 #include <algorithm>
+#include <iostream>
+
 
 void EntityManager::SpawnBullet(const sf::Vector2f& position, const sf::Vector2f& direction)
 {
-    m_Bullets.emplace_back(position, direction);
+    m_Entities.push_back(std::make_unique<Bullet>(position, direction));
 }
 
 void EntityManager::SpawnAsteroid(const sf::Vector2f& position, const sf::Vector2f& direction)
 {
-    m_Asteroids.emplace_back(position, direction);
+    m_Entities.push_back(std::make_unique<Asteroid>(position, direction));
 }
 
 void EntityManager::Update(float deltaTime)
 {
-    for (Bullet& bullet : m_Bullets)
-    {
-        bullet.Update(deltaTime);
-    }
+    // for (Bullet& bullet : m_Bullets)
+    // {
+    //     bullet.Update(deltaTime);
+    // }
 
-    for (Asteroid& asteroid : m_Asteroids)
+    // for (Asteroid& asteroid : m_Asteroids)
+    // {
+    //     asteroid.Update(deltaTime);
+    // }
+
+    for(auto& entity : m_Entities)
     {
-        asteroid.Update(deltaTime);
+        entity->Update(deltaTime);
     }
 
     CheckCollisions();
+    CleanupDestroyedEntities();
 }
 
 void EntityManager::Render(sf::RenderWindow& window)
 {
-    for (Bullet& bullet : m_Bullets)
-    {
-        bullet.Render(window);
-    }
+    // for (Bullet& bullet : m_Bullets)
+    // {
+    //     bullet.Render(window);
+    // }
 
-    for (Asteroid& asteroid : m_Asteroids)
+    // for (Asteroid& asteroid : m_Asteroids)
+    // {
+    //     asteroid.Render(window);
+    // }
+
+    for(auto& entity : m_Entities)
     {
-        asteroid.Render(window);
+        entity->Render(window);
     }
     
 }
 
 void EntityManager::CheckCollisions()
 {
-    for(size_t bulletIndex = 0; bulletIndex < m_Bullets.size(); bulletIndex++)
+    for(size_t i = 0; i < m_Entities.size(); i++)
     {
-        Bullet& bullet = m_Bullets[bulletIndex];
-        
-        if (bullet.IsPendingDestroy())
+        Entity* entityA = m_Entities[i].get();
+
+        if(entityA->IsPendingDestroy())
         {
             continue;
         }
 
-        for(size_t asteroidIndex = 0; asteroidIndex < m_Asteroids.size(); asteroidIndex++)
+        for(size_t j = i + 1; j < m_Entities.size(); j++)
         {
-            Asteroid& asteroid = m_Asteroids[asteroidIndex];
+            Entity* entityB = m_Entities[j].get();
 
-            if (asteroid.IsPendingDestroy())
+            if(entityB->IsPendingDestroy())
             {
                 continue;
             }
 
-
-            float distance = Math::Distance(bullet.GetPosition(), asteroid.GetPosition());
-            float radiusSum = bullet.GetRadius() + asteroid.GetRadius();
+            float distance = Math::Distance(entityA->GetPosition(), entityB->GetPosition());
+            float radiusSum = entityA->GetRadius() + entityB->GetRadius();
 
             if (distance < radiusSum)
             {
-               bullet.OnCollision(&asteroid);
-               asteroid.OnCollision(&bullet);
-
-                return;
+                entityA->OnCollision(entityB);
+                entityB->OnCollision(entityA);
             }
         }
     }
+    
 }
 
 
 void EntityManager::CleanupDestroyedEntities()
 {
-    m_Bullets.erase(
-        std::remove_if(
-            m_Bullets.begin(),
-            m_Bullets.end(),
-            [](const Bullet& bullet)
-            {
-                return bullet.IsPendingDestroy();
-            }),
-        m_Bullets.end());
-
-
-
-    m_Asteroids.erase(
-        std::remove_if(
-            m_Asteroids.begin(),
-            m_Asteroids.end(),
-            [](const Asteroid& asteroid)
-            {
-                return asteroid.IsPendingDestroy();
-            }),
-            m_Asteroids.end());
+    m_Entities.erase(
+        std::remove_if(m_Entities.begin(), m_Entities.end(), 
+        [](const std::unique_ptr<Entity>& entity)
+         {
+            return entity->IsPendingDestroy();
+         }), 
+        m_Entities.end());
 }
