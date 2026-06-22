@@ -11,12 +11,20 @@ Enemy::Enemy(const sf::Vector2f& position)
     m_Shape.setPosition(position);
 }
 
-void Enemy::Update(float deltaTime, const sf::Vector2f& targetPosition)
+void Enemy::Update(float deltaTime)
 {
     sf::Vector2f currentPosition = m_Shape.getPosition();
-    
-    m_Shape.setPosition(Math::MoveTowards(currentPosition, targetPosition, m_Speed, deltaTime));
+
+    m_Shape.setPosition(Math::MoveTowards(currentPosition, m_TargetPosition, m_Speed, deltaTime));
 }
+
+
+
+void Enemy::SetTargetPosition(const sf::Vector2f& targetPosition)
+{
+    m_TargetPosition = targetPosition;
+}
+
 
 
 void Enemy::Render(sf::RenderWindow& window)
@@ -35,12 +43,21 @@ void Enemy::TakeDamage(int amount)
     }
 }
 
+
+
 sf::Vector2f Enemy::GetPosition() const
 {
     return m_Shape.getPosition();
 }
 
+
+
 float Enemy::GetRadius() const
 {
     return m_Shape.getRadius();
+}
+
+EntityType Enemy::GetType() const
+{
+    return EntityType::Enemy;
 }

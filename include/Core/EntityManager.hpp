@@ -6,6 +6,7 @@
 #include "Entities/Bullet.hpp"
 #include "Entities/Asteroid.hpp"
 #include "Entities/Entity.hpp"
+#include "Entities/Enemy.hpp"
 
 class EntityManager
 {
@@ -20,6 +21,9 @@ public:
 
     template<typename T, typename... Args>
     void SpawnEntity(Args&&... args);
+
+    void SpawnEnemy(const sf::Vector2f& position);
+    void SetEnemiesTargetPosition(const sf::Vector2f& targetPosition);
 
 private:
     std::vector<Bullet> m_Bullets;

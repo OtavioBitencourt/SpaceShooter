@@ -5,6 +5,8 @@ Game::Game()
       m_Player(&m_EntityManager)
 {
     m_Window.setFramerateLimit(144);
+
+    m_EntityManager.SpawnEnemy({100.f, 100.f});
 }
 
 void Game::Run()
@@ -30,16 +32,19 @@ void Game::ProcessEvents()
 
 void Game::Update()
 {
-
     float deltaTime = m_Clock.restart().asSeconds();
 
     sf::Vector2i mousePosition = sf::Mouse::getPosition(m_Window);
 
-    sf::Vector2f worldPosition(static_cast<float>(mousePosition.x), static_cast<float>(mousePosition.y));
+    sf::Vector2f worldPosition(
+        static_cast<float>(mousePosition.x), 
+        static_cast<float>(mousePosition.y));
 
     m_Player.Update(deltaTime, worldPosition);
-
+    
+    m_EntityManager.SetEnemiesTargetPosition(m_Player.GetPosition());
     m_EntityManager.Update(deltaTime);
+
 }
 
 void Game::Render()
@@ -51,4 +56,9 @@ void Game::Render()
     m_EntityManager.Render(m_Window);
 
     m_Window.display();
+}
+
+void EntityManager::SpawnEnemy(const sf::Vector2f& position)
+{
+    m_Entities.push_back(std::make_unique<Enemy>(position));
 }

@@ -1,5 +1,8 @@
 #include "Core/EntityManager.hpp"
 #include "Utils/Math.hpp"
+#include "Entities/Enemy.hpp"
+#include "Entities/EntityType.hpp"
+
 #include <algorithm>
 #include <iostream>
 
@@ -97,4 +100,17 @@ void EntityManager::CleanupDestroyedEntities()
             return entity->IsPendingDestroy();
          }), 
         m_Entities.end());
+}
+
+
+void EntityManager::SetEnemiesTargetPosition(const sf::Vector2f& targetPosition)
+{
+    for (auto& entity : m_Entities)
+    {
+        if (entity->GetType() == EntityType::Enemy)
+        {
+            Enemy* enemy = static_cast<Enemy*>(entity.get());
+            enemy->SetTargetPosition(targetPosition);
+        }
+    }
 }
