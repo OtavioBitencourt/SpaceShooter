@@ -1,4 +1,6 @@
 #include "Entities/Bullet.hpp"
+#include "Entities/IDamageable.hpp"
+#include "Entities/EntityType.hpp"
 #include <iostream>
 
 Bullet::Bullet(const sf::Vector2f& position, const sf::Vector2f& direction) 
@@ -38,6 +40,19 @@ float Bullet::GetRadius() const
 
 void Bullet::OnCollision(Entity* other)
 {
+    if (other->GetType() == EntityType::Asteroid)
+    {
+        other->Destroy();
+    }
+
+    IDamageable* damageable = 
+        dynamic_cast<IDamageable*>(other);
+    
+    if(damageable != nullptr)
+    {
+        damageable->TakeDamage(25);
+    }
+
     Destroy();
 }
 
