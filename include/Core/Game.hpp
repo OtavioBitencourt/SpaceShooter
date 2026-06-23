@@ -15,12 +15,19 @@ private:
     void ProcessEvents();
     void Update();
     void Render();
+    sf::Vector2f GenerateEnemySpawnPosition();
 
 private: 
     sf::RenderWindow m_Window;
     EntityManager m_EntityManager;
+
     Player m_Player; 
     sf::Clock m_Clock;
+
+    float m_EnemySpawnTimer;
+    float m_EnemySpawnInterval;
+
+    
 
 
 };

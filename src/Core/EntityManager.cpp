@@ -114,3 +114,8 @@ void EntityManager::SetEnemiesTargetPosition(const sf::Vector2f& targetPosition)
         }
     }
 }
+
+void EntityManager::SpawnEnemy(const sf::Vector2f& position)
+{
+    m_Entities.push_back(std::make_unique<Enemy>(position));
+}
