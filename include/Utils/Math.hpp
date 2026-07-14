@@ -29,7 +29,7 @@ namespace Math
     }
 
 
-    static sf::Vector2f MoveTowards(const sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime)
+    inline sf::Vector2f MoveTowards(const sf::Vector2f& current, const sf::Vector2f& target, float speed, float deltaTime)
     {
         sf::Vector2f direction = target - current; 
 

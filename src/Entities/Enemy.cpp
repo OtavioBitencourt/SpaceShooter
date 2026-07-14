@@ -1,5 +1,6 @@
 #include "Entities/Enemy.hpp"
 #include "Utils/Math.hpp"
+#include <iostream>
 
 Enemy::Enemy(const sf::Vector2f& position)
    : m_Speed(150.f)
@@ -26,7 +27,6 @@ void Enemy::SetTargetPosition(const sf::Vector2f& targetPosition)
 }
 
 
-
 void Enemy::Render(sf::RenderWindow& window)
 {
     window.draw(m_Shape);
@@ -44,12 +44,10 @@ void Enemy::TakeDamage(int amount)
 }
 
 
-
 sf::Vector2f Enemy::GetPosition() const
 {
     return m_Shape.getPosition();
 }
-
 
 
 float Enemy::GetRadius() const
@@ -57,7 +55,20 @@ float Enemy::GetRadius() const
     return m_Shape.getRadius();
 }
 
+
 EntityType Enemy::GetType() const
 {
     return EntityType::Enemy;
+}
+
+void Enemy::OnCollision(Entity* other)
+{
+    IDamageable* damageble = dynamic_cast<IDamageable*>(other);
+
+    if(damageble != nullptr && other->GetType() == EntityType::Player)
+    {
+        std::cout << "Aplicando dano ao Player" << std::endl;
+        damageble->TakeDamage(25);
+        Destroy();
+    } 
 }

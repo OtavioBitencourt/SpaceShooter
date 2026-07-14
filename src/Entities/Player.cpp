@@ -6,14 +6,13 @@
 #include "Core/EntityManager.hpp"
 
 Player::Player(EntityManager* entityManager)
-    : m_EntityManager(entityManager),
-      m_Speed(400.f),
+    : m_Speed(400.f),
+      m_Health(100),
       m_ShootCooldown(0.1f),
       m_CurrentShootCooldown(0.f),
-      m_AsteroidSpawnTimer(1.5f),
-      m_CurrentAsteroidSpawnTimer(0.f)
-
+      m_EntityManager(entityManager)
 {
+    
     m_Shape.setPointCount(3);
     m_Shape.setRadius(30.f);
 
@@ -27,11 +26,10 @@ Player::Player(EntityManager* entityManager)
 }
 
 
-void Player::Update(float deltaTime, const sf::Vector2f& targetPosition)
+void Player::Update(float deltaTime)
 {
-    sf::Vector2f currentPosition = m_Shape.getPosition(); 
-
-    sf::Vector2f direction = targetPosition - currentPosition;
+    sf::Vector2f currentPosition = m_Shape.getPosition();
+    sf::Vector2f direction = m_TargetPosition - currentPosition;
 
     float distance = Math::Length(direction); 
 
@@ -55,69 +53,12 @@ void Player::Update(float deltaTime, const sf::Vector2f& targetPosition)
 
     if(sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) && m_CurrentShootCooldown <= 0.f)
     {
+
         m_EntityManager->SpawnBullet( m_Shape.getPosition(), m_Forward);
 
         m_CurrentShootCooldown = m_ShootCooldown;
     }
 
-
-
-    //Asteroids
-
-    m_CurrentAsteroidSpawnTimer -= deltaTime; //Atualiza o temporizador de spawn
-
-    if (m_CurrentAsteroidSpawnTimer <= 0.f) 
-    {
-
-        int side = std::rand() % 4; //Escolhe uma borda aleatória
-
-        sf::Vector2f spawnPosition;
-
-        switch (side) 
-        {
-            //TOPO
-            case 0: 
-                spawnPosition = {static_cast<float>(std::rand() % 1280), -100.f};
-                break; 
-
-            
-            //BAIXO
-            case 1: 
-                spawnPosition = {static_cast<float>(std::rand() % 1280), 820.f};
-                break;
-
-
-            //ESQUERDA
-            case 2: 
-                spawnPosition = {-100.f, static_cast<float>(std::rand() % 720)};
-                break;
-
-            //DIREITA
-            case 3: 
-                spawnPosition = {1380.f, static_cast<float>(std::rand() % 720)};
-                break;
-        }
-
-        //Ponto aleatório da tela - direação do asteroide
-        sf::Vector2f target (static_cast<float>(std::rand() % 1280), static_cast<float>(std::rand() % 720)); 
-
-        //Vetor que aponta do spawn até o alvo
-        sf::Vector2f direction = Math::Normalize(target - spawnPosition);
-
-        //Cria o asteroide
-        m_EntityManager->SpawnAsteroid(spawnPosition, direction);
-
-        //Reinicia o temporizador
-        m_CurrentAsteroidSpawnTimer = m_AsteroidSpawnTimer;
-    }
-
-   
-}
-
-
-void Player::Update(float deltaTime)
-{
-    Update(deltaTime, m_Shape.getPosition());
 }
 
 
@@ -140,7 +81,26 @@ sf::Vector2f Player::GetPosition() const
 }
 
 
+
 float Player::GetRadius() const
 {
     return m_Shape.getRadius();
+}
+
+
+void Player::TakeDamage(int amount)
+{
+    m_Health -= amount;
+
+    std::cout << "Player HP: " << m_Health << std::endl;
+
+    if (m_Health <= 0)
+    {
+        Destroy();
+    }
+}
+
+void Player::SetTargetPosition(const sf::Vector2f& position)
+{
+    m_TargetPosition = position;
 }
