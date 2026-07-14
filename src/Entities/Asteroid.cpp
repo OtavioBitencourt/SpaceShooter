@@ -1,4 +1,6 @@
 #include "Entities/Asteroid.hpp"
+#include "Entities/IDamageable.hpp"
+
 #include <iostream>
 
 Asteroid::Asteroid(const sf::Vector2f& position, const sf::Vector2f& direction)
@@ -37,6 +39,13 @@ float Asteroid::GetRadius() const
 
 void Asteroid::OnCollision(Entity* other)
 {
+    IDamageable* damageable = dynamic_cast<IDamageable*>(other);
+
+    if(damageable != nullptr)
+    {
+        damageable->TakeDamage(5);
+    }
+
     Destroy();
 }
 
