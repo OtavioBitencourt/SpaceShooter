@@ -7,6 +7,7 @@
 #include "Entities/Asteroid.hpp"
 #include "Entities/Entity.hpp"
 #include "Entities/Enemy.hpp"
+#include "Entities/Player.hpp"
 
 class EntityManager
 {
@@ -17,7 +18,6 @@ public:
     void SpawnBullet(const sf::Vector2f& position, const sf::Vector2f& direction);
     void SpawnAsteroid(const sf::Vector2f& position, const sf::Vector2f& direction);
 
-    void CleanupDestroyedEntities();
 
     template<typename T, typename... Args>
     void SpawnEntity(Args&&... args);
@@ -25,13 +25,25 @@ public:
     void SpawnEnemy(const sf::Vector2f& position);
     void SetEnemiesTargetPosition(const sf::Vector2f& targetPosition);
 
+    void SpawnPlayer();
+    Player* GetPlayer() const;
+
+    void MergePendingEntities();
+    void CleanupDestroyedEntities();
+
+  
+
 private:
-    std::vector<Bullet> m_Bullets;
-    std::vector<Asteroid> m_Asteroids;
 
     std::vector<std::unique_ptr<Entity>> m_Entities;
+    std::vector<std::unique_ptr<Entity>> m_PendingEntities;
 
     void CheckCollisions();
+    bool CanCollide(Entity* entityA, Entity* entityB) const;
+
+    Player* m_Player = nullptr;
+
+    
 };
 
 

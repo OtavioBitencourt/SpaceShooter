@@ -7,15 +7,19 @@
 #include <iostream>
 
 
+
 void EntityManager::SpawnBullet(const sf::Vector2f& position, const sf::Vector2f& direction)
 {
-    m_Entities.push_back(std::make_unique<Bullet>(position, direction));
+    m_PendingEntities.push_back(std::make_unique<Bullet>(position, direction));
 }
+
+
 
 void EntityManager::SpawnAsteroid(const sf::Vector2f& position, const sf::Vector2f& direction)
 {
-    m_Entities.push_back(std::make_unique<Asteroid>(position, direction));
+    m_PendingEntities.push_back(std::make_unique<Asteroid>(position, direction));
 }
+
 
 void EntityManager::Update(float deltaTime)
 {
@@ -35,6 +39,7 @@ void EntityManager::Update(float deltaTime)
     }
 
     CheckCollisions();
+    MergePendingEntities();
     CleanupDestroyedEntities();
 }
 
@@ -77,6 +82,11 @@ void EntityManager::CheckCollisions()
                 continue;
             }
 
+            if (!CanCollide(entityA, entityB))
+            {
+                continue;
+            }
+
             float distance = Math::Distance(entityA->GetPosition(), entityB->GetPosition());
             float radiusSum = entityA->GetRadius() + entityB->GetRadius();
 
@@ -93,13 +103,33 @@ void EntityManager::CheckCollisions()
 
 void EntityManager::CleanupDestroyedEntities()
 {
+    // m_Entities.erase(
+    //     std::remove_if(m_Entities.begin(), m_Entities.end(), 
+    //     [](const std::unique_ptr<Entity>& entity)
+    //      {
+    //         return entity->IsPendingDestroy();
+    //      }), 
+    //     m_Entities.end());
+
+
+    for (auto& entity : m_Entities)
+    {
+        if (entity.get() == m_Player && entity->IsPendingDestroy())
+        {
+            m_Player = nullptr;
+        }
+    }
+
     m_Entities.erase(
-        std::remove_if(m_Entities.begin(), m_Entities.end(), 
-        [](const std::unique_ptr<Entity>& entity)
-         {
-            return entity->IsPendingDestroy();
-         }), 
-        m_Entities.end());
+            std::remove_if(
+                m_Entities.begin(),
+                m_Entities.end(),
+                [](const std::unique_ptr<Entity>& entity)
+                {
+                    return entity->IsPendingDestroy();
+                }), 
+            m_Entities.end());
+
 }
 
 
@@ -115,7 +145,51 @@ void EntityManager::SetEnemiesTargetPosition(const sf::Vector2f& targetPosition)
     }
 }
 
+
 void EntityManager::SpawnEnemy(const sf::Vector2f& position)
 {
-    m_Entities.push_back(std::make_unique<Enemy>(position));
+    m_PendingEntities.push_back(std::make_unique<Enemy>(position));
+}
+
+void EntityManager::SpawnPlayer()
+{
+    auto player = std::make_unique<Player>(this);
+    m_Player = player.get();
+    m_PendingEntities.push_back(std::move(player));
+
+}
+
+
+Player* EntityManager::GetPlayer() const
+{
+    return m_Player;
+}
+
+
+void EntityManager::MergePendingEntities()
+{
+    for (auto& entity : m_PendingEntities)
+    {
+        m_Entities.push_back(std::move(entity));
+    }
+
+    m_PendingEntities.clear();
+}
+
+bool EntityManager::CanCollide(Entity* entityA, Entity* entityB) const
+{
+    EntityType typeA = entityA->GetType();
+    EntityType typeB = entityB->GetType();
+
+    if(typeA == EntityType::Bullet && typeB == EntityType::Player)
+    {
+        return false;
+    }
+
+    if(typeA == EntityType::Player && typeB == EntityType::Bullet)
+    {
+        return false;
+    }
+
+    return true;
 }
