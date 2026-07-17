@@ -3,6 +3,7 @@
 
 #include <random>
 
+
 Game::Game()
     : m_Window(sf::VideoMode({1280, 720}), "Space Shooter"),  
       m_EnemySpawnTimer(0.f),
@@ -55,6 +56,7 @@ void Game::Update()
     }
 
     m_EntityManager.Update(deltaTime);
+
 
     // Enemy Spawn
     m_EnemySpawnTimer += deltaTime;
