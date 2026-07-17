@@ -23,21 +23,13 @@ void EntityManager::SpawnAsteroid(const sf::Vector2f& position, const sf::Vector
 
 void EntityManager::Update(float deltaTime)
 {
-    // for (Bullet& bullet : m_Bullets)
-    // {
-    //     bullet.Update(deltaTime);
-    // }
-
-    // for (Asteroid& asteroid : m_Asteroids)
-    // {
-    //     asteroid.Update(deltaTime);
-    // }
 
     for(auto& entity : m_Entities)
     {
         entity->Update(deltaTime);
     }
 
+    CheckOutOfBounds();
     CheckCollisions();
     MergePendingEntities();
     CleanupDestroyedEntities();
@@ -192,4 +184,51 @@ bool EntityManager::CanCollide(Entity* entityA, Entity* entityB) const
     }
 
     return true;
+}
+
+
+
+
+bool EntityManager::ShouldDestroyOutOfBounds(Entity* entity) const
+{
+    switch (entity->GetType())
+    {
+        case EntityType::Bullet:
+        case EntityType::Asteroid:
+        case EntityType::Enemy:
+            return true;
+        
+        case EntityType::Player:
+            return false;
+    }
+
+    return false;
+}
+
+
+void EntityManager::CheckOutOfBounds()
+{
+    constexpr float minX = -150.f;
+    constexpr float maxX = 1430.f;
+    constexpr float minY = -150.f;
+    constexpr float maxY = 870.f;
+
+    for (auto& entity : m_Entities)
+    {
+        if (!ShouldDestroyOutOfBounds(entity.get()))
+        {
+            continue;
+        }
+
+        sf::Vector2f position = entity->GetPosition();
+
+        if (position.x < minX || 
+            position.x > maxX ||
+            position.y < minY ||
+            position.y > maxY)
+        {
+            entity->Destroy();
+        }
+    }
+
 }

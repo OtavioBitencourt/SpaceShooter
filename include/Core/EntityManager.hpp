@@ -28,10 +28,9 @@ public:
     void SpawnPlayer();
     Player* GetPlayer() const;
 
-    void MergePendingEntities();
+    
     void CleanupDestroyedEntities();
 
-  
 
 private:
 
@@ -39,7 +38,14 @@ private:
     std::vector<std::unique_ptr<Entity>> m_PendingEntities;
 
     void CheckCollisions();
+    void CheckOutOfBounds();
+    
     bool CanCollide(Entity* entityA, Entity* entityB) const;
+    bool ShouldDestroyOutOfBounds(Entity* entity) const;
+
+    void MergePendingEntities();
+
+   
 
     Player* m_Player = nullptr;
 
