@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 
 #include "Entities/Bullet.hpp"
 #include "Entities/Asteroid.hpp"
@@ -31,6 +32,8 @@ public:
     
     void CleanupDestroyedEntities();
 
+    void SetOnEntityDestroyedCallback(std::function<void(EntityType)> callback);
+
 
 private:
 
@@ -49,8 +52,9 @@ private:
 
     Player* m_Player = nullptr;
 
-    
+    std::function<void(EntityType)> m_OnEntityDestroyed;
 };
+
 
 
 template<typename T, typename... Args>

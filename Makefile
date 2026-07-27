@@ -42,7 +42,8 @@ src/Entities/Player.cpp \
 src/Entities/Bullet.cpp \
 src/Entities/Asteroid.cpp \
 src/Entities/Enemy.cpp \
-src/Core/EntityManager.cpp
+src/Core/EntityManager.cpp \
+src/Core/ScoreManager.cpp
 
 
 # =========================================
