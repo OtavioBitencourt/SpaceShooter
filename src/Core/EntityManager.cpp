@@ -95,20 +95,24 @@ void EntityManager::CheckCollisions()
 
 void EntityManager::CleanupDestroyedEntities()
 {
-    // m_Entities.erase(
-    //     std::remove_if(m_Entities.begin(), m_Entities.end(), 
-    //     [](const std::unique_ptr<Entity>& entity)
-    //      {
-    //         return entity->IsPendingDestroy();
-    //      }), 
-    //     m_Entities.end());
 
-
-    for (auto& entity : m_Entities)
+    for (const auto& entity : m_Entities)
     {
+        if (!entity->IsPendingDestroy())
+        {
+            continue;
+        }
+
+
         if (entity.get() == m_Player && entity->IsPendingDestroy())
         {
             m_Player = nullptr;
+        }
+
+
+        if(m_OnEntityDestroyed)
+        {
+            m_OnEntityDestroyed(entity->GetType());
         }
     }
 
@@ -231,4 +235,10 @@ void EntityManager::CheckOutOfBounds()
         }
     }
 
+}
+
+
+void EntityManager::SetOnEntityDestroyedCallback(std::function<void(EntityType)> callback)
+{
+    m_OnEntityDestroyed = std::move(callback);
 }

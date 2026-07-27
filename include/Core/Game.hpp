@@ -5,6 +5,7 @@
 #include "Entities/Player.hpp"
 #include "Core/EntityManager.hpp"
 #include "Entities/Asteroid.hpp"
+#include "Core/ScoreManager.hpp"
 
 
 class Game
@@ -30,10 +31,12 @@ private:
     float m_EnemySpawnTimer;
     float m_EnemySpawnInterval;
 
-    //asteroides
+    //Asteroides
     float m_AsteroidSpawnTimer;
     float m_CurrentAsteroidSpawnTimer;
 
+    //Score
+    ScoreManager m_ScoreManager;
     
 
 

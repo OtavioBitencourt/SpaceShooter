@@ -14,6 +14,22 @@ Game::Game()
 {
     m_Window.setFramerateLimit(144);
     m_EntityManager.SpawnPlayer();
+
+    m_EntityManager.SetOnEntityDestroyedCallback([this](EntityType type) {
+       switch (type)
+       {
+            case EntityType::Enemy:
+                m_ScoreManager.AddScore(100);
+                break;
+
+            case EntityType::Asteroid:
+                m_ScoreManager.AddScore(25);
+                break;
+            
+            default:
+                break;
+       }
+    });
 }
 
 void Game::Run()
@@ -125,6 +141,8 @@ void Game::Render()
     m_Window.clear();
 
     m_EntityManager.Render(m_Window);
+
+    m_ScoreManager.Render(m_Window);
 
     m_Window.display();
 }
