@@ -43,7 +43,8 @@ src/Entities/Bullet.cpp \
 src/Entities/Asteroid.cpp \
 src/Entities/Enemy.cpp \
 src/Core/EntityManager.cpp \
-src/Core/ScoreManager.cpp
+src/Core/ScoreManager.cpp \
+src/Core/HUDManager.cpp
 
 
 # =========================================

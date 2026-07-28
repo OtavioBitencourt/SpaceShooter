@@ -5,23 +5,15 @@
 
 class ScoreManager
 {
-    public:
-        ScoreManager();
+public:
 
-        void AddScore(int amount);
-        void Reset();
+    ScoreManager();
 
-        int GetScore() const;
+    void AddScore(int amount);
 
-        void Render(sf::RenderWindow& window);
+    int GetScore() const;
 
-        
-    
-    private:
-        void UpdateText();
+private:
 
-        int m_Score;
-        
-        sf::Font m_Font;
-        std::unique_ptr<sf::Text> m_Text;
+    int m_Score;
 };

@@ -2,6 +2,7 @@
 #include "Utils/Math.hpp"
 
 #include <random>
+#include <iostream>
 
 
 Game::Game()
@@ -30,6 +31,12 @@ Game::Game()
                 break;
        }
     });
+
+
+   if (!m_HUDManager.Initialize())
+    {
+        std::cout << "Erro ao inicializar o HUDManager!" << std::endl;
+    }
 }
 
 void Game::Run()
@@ -134,6 +141,8 @@ void Game::Update()
         m_CurrentAsteroidSpawnTimer = m_AsteroidSpawnTimer;
     }
 
+    m_HUDManager.SetScore(m_ScoreManager.GetScore());
+
 }
 
 void Game::Render()
@@ -142,9 +151,10 @@ void Game::Render()
 
     m_EntityManager.Render(m_Window);
 
-    m_ScoreManager.Render(m_Window);
+    m_HUDManager.Render(m_Window);
 
     m_Window.display();
+
 }
 
 sf::Vector2f Game::GenerateEnemySpawnPosition()
