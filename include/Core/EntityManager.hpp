@@ -34,6 +34,8 @@ public:
 
     void SetOnEntityDestroyedCallback(std::function<void(EntityType)> callback);
 
+    int GetEntityCount() const;
+
 
 private:
 

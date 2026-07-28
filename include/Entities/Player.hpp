@@ -32,6 +32,8 @@ public:
 
     void SetTargetPosition(const sf::Vector2f& position);
 
+    int GetHealth() const { return m_Health; }
+
    
 
 private: 

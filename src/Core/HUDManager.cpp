@@ -14,20 +14,25 @@ bool HUDManager::Initialize()
         return false;
     }
 
-    CreateText("Score", "Score: 0", {15.f, 15.f});
+    CreateText("Score", "Score", {15.f, 15.f});
+    CreateText("Health", "Vida", {15.f, 45.f});
+    CreateText("Time", "Tempo", {15.f, 75.f});
+    CreateText("Enemies", "Inimigos", {15.f, 105.f});
 
     return true;
 }
 
 
 
-void HUDManager::CreateText(const std::string& id, const std::string& text, const sf::Vector2f& position, unsigned int characterSize)
+void HUDManager::CreateText(const std::string& id, const std::string& label, const sf::Vector2f& position, unsigned int characterSize)
 {
-   auto newText = std::make_unique<sf::Text>(m_Font, text, characterSize);
+   HUDItem item;
 
-   newText->setPosition(position);
+   item.Label = label;
+   item.Text = std::make_unique<sf::Text>(m_Font, label + ": 0", characterSize);
+   item.Text->setPosition(position);
 
-   m_Texts[id] = std::move(newText);
+   m_Texts[id] = std::move(item);
 }
 
 
@@ -55,15 +60,30 @@ void HUDManager::SetText(const std::string& id, const std::string& text)
         return;
     }
 
-    it->second->setString(text);
+    it->second.Text->setString(text);
 }
+
+
+
+void HUDManager::SetValue(const std::string& id, int value)
+{
+    auto it = m_Texts.find(id);
+
+    if (it == m_Texts.end())
+    {
+        return;
+    }
+
+    it->second.Text->setString(it->second.Label + ": " + std::to_string(value));
+}
+
 
 
 void HUDManager::Render(sf::RenderWindow& window)
 {
-   for (const auto& [id, text] : m_Texts)
+   for (const auto& [id, item] : m_Texts)
    {
-        window.draw(*text);
+        window.draw(*item.Text);
    }
 }
 
