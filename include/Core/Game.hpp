@@ -41,6 +41,7 @@ private:
 
     //HUD
     HUDManager m_HUDManager;
+    float m_GameTime = 0.f;
     
     
 

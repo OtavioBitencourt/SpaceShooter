@@ -141,7 +141,25 @@ void Game::Update()
         m_CurrentAsteroidSpawnTimer = m_AsteroidSpawnTimer;
     }
 
+
+    //HUD
+
+    //Score
     m_HUDManager.SetScore(m_ScoreManager.GetScore());
+
+    //Health
+
+    if (player != nullptr)
+    {
+        m_HUDManager.SetValue("Health", player->GetHealth());
+    }
+
+    //Time
+    m_GameTime += deltaTime;
+    m_HUDManager.SetValue("Time", static_cast<int>(m_GameTime));
+
+    //Enemies
+    m_HUDManager.SetValue("Enemies", m_EntityManager.GetEntityCount());
 
 }
 

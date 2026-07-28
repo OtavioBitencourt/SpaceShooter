@@ -242,3 +242,18 @@ void EntityManager::SetOnEntityDestroyedCallback(std::function<void(EntityType)>
 {
     m_OnEntityDestroyed = std::move(callback);
 }
+
+
+int EntityManager::GetEntityCount() const
+{
+    int count = 0;
+    for (const auto& entity : m_Entities)
+    {
+        if (entity->GetType() == EntityType::Enemy)
+        {
+            count++;
+        }
+    }
+
+    return count;
+}
