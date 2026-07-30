@@ -7,8 +7,6 @@
 
 Game::Game()
     : m_Window(sf::VideoMode({1280, 720}), "Space Shooter"),  
-      m_EnemySpawnTimer(0.f),
-      m_EnemySpawnInterval(2.f),
       m_AsteroidSpawnTimer(1.5f),
       m_CurrentAsteroidSpawnTimer(0.f)
 
@@ -16,6 +14,7 @@ Game::Game()
     m_Window.setFramerateLimit(144);
     m_EntityManager.SpawnPlayer();
 
+    //Callback to update the score when an entity is destroyed
     m_EntityManager.SetOnEntityDestroyedCallback([this](EntityType type) {
        switch (type)
        {
@@ -33,11 +32,20 @@ Game::Game()
     });
 
 
+   //Error to initialize the HUDManager
    if (!m_HUDManager.Initialize())
     {
         std::cout << "Erro ao inicializar o HUDManager!" << std::endl;
     }
+
+
+   //START WAVE
+   m_WaveManager.Start();
+
 }
+
+
+
 
 void Game::Run()
 {
@@ -81,16 +89,27 @@ void Game::Update()
     m_EntityManager.Update(deltaTime);
 
 
-    // Enemy Spawn
-    m_EnemySpawnTimer += deltaTime;
 
-    if (m_EnemySpawnTimer >= m_EnemySpawnInterval)
+    //Enemy Spawn
+
+    // Atualiza a lógica das Waves
+    m_WaveManager.Update(deltaTime);
+    
+    //Verifica se a Wave atual terminou
+    if (!m_WaveManager.IsWaitingNextWave() && 
+        !m_WaveManager.ShouldStartWave() && 
+        m_EntityManager.GetEntityCount() == 0)
     {
-        m_EntityManager.SpawnEnemy(GenerateEnemySpawnPosition());
-        m_EnemySpawnTimer = 0.f;
+        m_WaveManager.CompleteWave();
     }
 
+    //Inicia uma nova Wave, se necessário
+    if (m_WaveManager.ShouldStartWave())
+    {
+        StartCurrentWave();
+    }
     
+
 
     //Asteroids Spawn
 
@@ -161,6 +180,11 @@ void Game::Update()
     //Enemies
     m_HUDManager.SetValue("Enemies", m_EntityManager.GetEntityCount());
 
+    //WAVE
+    m_HUDManager.SetValue("Wave", m_WaveManager.GetCurrentWave());
+
+  
+
 }
 
 void Game::Render()
@@ -203,4 +227,14 @@ sf::Vector2f Game::GenerateEnemySpawnPosition()
     }
 
     return {0.f, 0.f};   
+}
+
+void Game::StartCurrentWave()
+{
+    for (int i = 0; i < m_WaveManager.GetEnemiesToSpawn(); ++i)
+    {
+        m_EntityManager.SpawnEnemy(GenerateEnemySpawnPosition());
+    }
+
+    m_WaveManager.NotifyWaveStarted();
 }

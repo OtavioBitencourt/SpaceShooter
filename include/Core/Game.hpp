@@ -8,6 +8,7 @@
 #include "Entities/Asteroid.hpp"
 #include "Core/ScoreManager.hpp"
 #include "Core/HUDManager.hpp"
+#include "Core/WaveManager.hpp"
 
 class Game
 {
@@ -21,6 +22,8 @@ private:
     void Render();
     
     sf::Vector2f GenerateEnemySpawnPosition();
+
+    void StartCurrentWave();
 
 private: 
     sf::RenderWindow m_Window;
@@ -42,6 +45,9 @@ private:
     //HUD
     HUDManager m_HUDManager;
     float m_GameTime = 0.f;
+
+    //WAVE
+    WaveManager m_WaveManager;
     
     
 
