@@ -44,7 +44,8 @@ src/Entities/Asteroid.cpp \
 src/Entities/Enemy.cpp \
 src/Core/EntityManager.cpp \
 src/Core/ScoreManager.cpp \
-src/Core/HUDManager.cpp
+src/Core/HUDManager.cpp \
+src/Core/WaveManager.cpp
 
 
 # =========================================

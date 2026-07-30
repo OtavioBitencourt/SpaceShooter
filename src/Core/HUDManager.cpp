@@ -18,6 +18,7 @@ bool HUDManager::Initialize()
     CreateText("Health", "Vida", {15.f, 45.f});
     CreateText("Time", "Tempo", {15.f, 75.f});
     CreateText("Enemies", "Inimigos", {15.f, 105.f});
+    CreateText("Wave", "Wave", {15.f, 135.f});
 
     return true;
 }
