@@ -17,13 +17,8 @@
 //------------------------------------------------------------
 
 HUDManager::HUDManager()
-    : m_Score(0)
 {
-    // Inicializa a pontuação exibida pelo HUD.
-    //
-    // O valor real da pontuação continua sendo responsabilidade
-    // do ScoreManager. Este membro existe por compatibilidade
-    // com a implementação atual do HUD.
+    
 }
 
 
@@ -124,31 +119,6 @@ void HUDManager::CreateText(
     m_Texts[id] = std::move(item);
 }
 
-
-//------------------------------------------------------------
-// SetScore
-//------------------------------------------------------------
-
-void HUDManager::SetScore(int score)
-{
-    // Evita atualizar o texto quando o valor não sofreu alteração.
-    if (score == m_Score)
-    {
-        return;
-    }
-
-
-    m_Score = score;
-
-
-    // Atualiza especificamente o texto do Score.
-    //
-    // Este método mantém a compatibilidade com a implementação
-    // atual, embora o HUD já possua o método genérico SetValue().
-    SetText(
-        "Score",
-        "Score: " + std::to_string(m_Score));
-}
 
 
 //------------------------------------------------------------

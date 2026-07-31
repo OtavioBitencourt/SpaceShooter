@@ -85,12 +85,6 @@ public:
     bool Initialize();
 
 
-    // Atualiza o valor do Score exibido pelo HUD.
-    //
-    // Este método mantém compatibilidade com a implementação
-    // específica de Score existente no sistema.
-    void SetScore(int score);
-
 
     // Renderiza todos os elementos atualmente registrados
     // no HUD.
@@ -143,9 +137,4 @@ private:
     // "Wave"    -> HUDItem
     std::unordered_map<std::string, HUDItem> m_Texts;
 
-    // Valor do Score mantido pela implementação atual do HUD.
-    //
-    // Esse membro existe devido à versão anterior do sistema,
-    // que possuía gerenciamento específico da pontuação.
-    int m_Score;
 };

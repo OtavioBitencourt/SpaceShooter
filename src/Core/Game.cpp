@@ -182,7 +182,7 @@ void Game::Update()
     // repetidamente durante vários frames.
     if (!m_WaveManager.IsWaitingNextWave() &&
         !m_WaveManager.ShouldStartWave() &&
-        m_EntityManager.GetEntityCount() == 0)
+        m_EntityManager.GetEnemyCount() == 0)
     {
         m_WaveManager.CompleteWave();
     }
@@ -278,7 +278,8 @@ void Game::Update()
     //--------------------------------------------------------
 
     // Atualiza a pontuação exibida na interface.
-    m_HUDManager.SetScore(
+    m_HUDManager.SetValue(
+        "Score",
         m_ScoreManager.GetScore());
 
 
@@ -303,7 +304,7 @@ void Game::Update()
     // Exibe a quantidade atual de inimigos.
     m_HUDManager.SetValue(
         "Enemies",
-        m_EntityManager.GetEntityCount());
+        m_EntityManager.GetEnemyCount());
 
 
     // Exibe o número da Wave atual.
