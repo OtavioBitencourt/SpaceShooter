@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
+
 #include <functional>
 #include <memory>
 #include <utility>
@@ -96,10 +98,7 @@ public:
         std::function<void(EntityType)> callback);
 
     // Retorna a quantidade atual de inimigos ativos no jogo.
-    //
-    // Apesar do nome genérico, atualmente este método realiza
-    // especificamente a contagem de entidades do tipo Enemy.
-    int GetEntityCount() const;
+    int GetEnemyCount() const;
 
 
 private:

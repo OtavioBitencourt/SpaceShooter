@@ -467,13 +467,12 @@ void EntityManager::SetOnEntityDestroyedCallback(
 // GetEntityCount
 //------------------------------------------------------------
 
-int EntityManager::GetEntityCount() const
+int EntityManager::GetEnemyCount() const
 {
     int count = 0;
 
 
-    // Atualmente, apesar do nome genérico do método,
-    // a função conta especificamente entidades do tipo Enemy.
+    // Conta especificamente entidades do tipo Enemy.
     for (const auto& entity : m_Entities)
     {
         if (entity->GetType() == EntityType::Enemy)

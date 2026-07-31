@@ -4,7 +4,7 @@
 
 #include "Entities/Entity.hpp"
 #include "Entities/IDamageable.hpp"
-#include "Entities/Bullet.hpp"
+
 
 class EntityManager;
 
