@@ -24,16 +24,23 @@ Bullet::Bullet(
       m_Speed(1000.f)
 {
     // Define o tamanho visual do projétil.
-    m_Shape.setRadius(5.f);
+    m_Shape.setRadius(4.f);
 
     // Define a cor utilizada para representar o projétil.
-    m_Shape.setFillColor(sf::Color::Red);
+    m_Shape.setFillColor(sf::Color(255, 220, 40));
 
     // Centraliza a origem da forma para facilitar o posicionamento.
-    m_Shape.setOrigin({5.f, 5.f});
+    m_Shape.setOrigin({4.f, 4.f});
 
     // Posiciona o projétil no ponto de origem informado.
     m_Shape.setPosition(position);
+
+    // Adiciona um contorno para destacar visualmente o projétil.
+    m_Shape.setOutlineThickness(2.f);
+    
+    // Define a cor do contorno utilizada para aumentar a percepção
+    // de profundidade e separação do fundo.
+    m_Shape.setOutlineColor(sf::Color::White);
 }
 
 

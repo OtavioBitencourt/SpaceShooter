@@ -27,11 +27,11 @@ Asteroid::Asteroid(
 
     // Utiliza oito pontos para aproximar visualmente um
     // formato de asteroide.
-    m_Shape.setPointCount(8);
+    m_Shape.setPointCount(10);
 
     // Define a cor utilizada para representar o asteroide.
     m_Shape.setFillColor(
-        sf::Color(120, 120, 120));
+        sf::Color(110, 110, 110));
 
     // Centraliza a origem da forma para facilitar o
     // posicionamento.
@@ -39,6 +39,13 @@ Asteroid::Asteroid(
 
     // Posiciona o asteroide no ponto inicial informado.
     m_Shape.setPosition(position);
+
+    // Adiciona um contorno para destacar visualmente o asteroide.
+    m_Shape.setOutlineThickness(3.f);
+
+    // Define a cor do contorno utilizada para aumentar a percepção
+    // de profundidade e separação do fundo.
+    m_Shape.setOutlineColor(sf::Color(170, 170, 170));
 }
 
 

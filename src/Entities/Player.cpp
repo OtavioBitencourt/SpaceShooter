@@ -23,6 +23,18 @@
 // - Recebimento de dano.
 //============================================================
 
+namespace
+{
+    constexpr float BODY_HEIGHT = 30.f;
+    constexpr float BODY_HALF_WIDTH = 20.f;
+
+    constexpr float COCKPIT_RADIUS = 8.f;
+
+    constexpr sf::Vector2f PLAYER_START_POSITION = { 640.f, 360.f };
+}
+
+
+
 
 //------------------------------------------------------------
 // Construtor
@@ -35,21 +47,8 @@ Player::Player(EntityManager* entityManager)
       m_CurrentShootCooldown(0.f),
       m_EntityManager(entityManager)
 {
-    // Define a nave como uma forma triangular.
-    m_Shape.setPointCount(3);
-
-    // Define o tamanho da nave.
-    m_Shape.setRadius(30.f);
-
-    // Define a cor utilizada para desenhar o Player.
-    m_Shape.setFillColor(sf::Color::Cyan);
-
-    // Centraliza a origem da forma para facilitar o cálculo
-    // de posição e rotação.
-    m_Shape.setOrigin({30.f, 30.f});
-
-    // Posiciona o jogador no centro inicial da tela.
-    m_Shape.setPosition({640.f, 360.f});
+    // Inicializa a forma visual do Player.
+    InitializeShape();
 
 
     // Inicializa a semente utilizada pelas funções de geração
@@ -72,7 +71,7 @@ void Player::Update(float deltaTime)
 {
     // Obtém a posição atual da nave.
     sf::Vector2f currentPosition =
-        m_Shape.getPosition();
+        m_Body.getPosition();
 
     // Calcula o vetor que aponta da posição atual até o alvo.
     sf::Vector2f direction =
@@ -99,27 +98,18 @@ void Player::Update(float deltaTime)
 
         // Move a nave proporcionalmente à velocidade e ao
         // tempo transcorrido desde o último frame.
-        m_Shape.move(
+        m_Body.move(
             direction * m_Speed * deltaTime);
-
-
-        // Calcula o ângulo da direção atual em radianos.
-        float angle =
-            std::atan2(direction.y, direction.x);
-
-
-        // Converte o ângulo de radianos para graus para utilizar
-        // na API de rotação da SFML.
-        float angleDegress =
-            angle * 180.f / 3.14159265f;
-
-
-        // Rotaciona a nave para que ela aponte na direção do alvo.
-        //
-        // O deslocamento de 90 graus compensa a orientação
-        // inicial do triângulo.
-        m_Shape.setRotation(
-            sf::degrees(angleDegress + 90.f));
+            
+        // Atualiza a rotação da nave para que ela aponte
+        // na direção do alvo.
+        UpdateRotation(direction);
+    
+        // Repociona todas as peças da nave de acordo 
+        // com a nova posição e rotação.
+        UpdatePartsPosition();
+            
+            
     }
 
 
@@ -130,25 +120,12 @@ void Player::Update(float deltaTime)
     // Reduz o tempo restante do cooldown do disparo.
     m_CurrentShootCooldown -= deltaTime;
 
-
-    // Permite disparar somente quando o botão esquerdo do mouse
-    // estiver pressionado e o cooldown tiver terminado.
-    if (sf::Mouse::isButtonPressed(
-            sf::Mouse::Button::Left) &&
-        m_CurrentShootCooldown <= 0.f)
-    {
-        // Solicita ao EntityManager a criação de um projétil
-        // na posição atual do Player e utilizando sua direção
-        // atual como direção inicial da bala.
-        m_EntityManager->SpawnBullet(
-            m_Shape.getPosition(),
-            m_Forward);
+    // Executa a lógica de disparo, caso o jogador esteja pressionando
+    // o botão esquerdo do mouse e o cooldown tenha terminado.
+    Shoot();
 
 
-        // Reinicia o cooldown até que um novo disparo seja permitido.
-        m_CurrentShootCooldown =
-            m_ShootCooldown;
-    }
+   
 }
 
 
@@ -158,8 +135,17 @@ void Player::Update(float deltaTime)
 
 void Player::Render(sf::RenderWindow& window)
 {
-    // Desenha a representação visual do Player.
-    window.draw(m_Shape);
+
+    window.draw(m_LeftWing);
+    window.draw(m_RightWing);
+
+    window.draw(m_Body);
+    window.draw(m_Cockpit);
+
+    window.draw(m_LeftEngine);
+    window.draw(m_RightEngine);
+
+    window.draw(m_Flame);
 }
 
 
@@ -182,7 +168,7 @@ EntityType Player::GetType() const
 sf::Vector2f Player::GetPosition() const
 {
     // Retorna a posição atual do Player.
-    return m_Shape.getPosition();
+    return m_Body.getPosition();
 }
 
 
@@ -192,8 +178,9 @@ sf::Vector2f Player::GetPosition() const
 
 float Player::GetRadius() const
 {
-    // Retorna o raio da forma utilizado pelo sistema de colisões.
-    return m_Shape.getRadius();
+    // Retorna um raio aproximado utilizado nas verificações
+    // de colisão da nave.
+    return 30.f;
 }
 
 
@@ -237,4 +224,208 @@ void Player::SetTargetPosition(
     // Armazena a posição que será utilizada como alvo
     // de movimentação no próximo Update().
     m_TargetPosition = position;
+}
+
+
+
+//------------------------------------------------------------
+// InitializeShape
+//------------------------------------------------------------
+
+void Player::InitializeShape()
+{
+  
+   InitializeBody();
+   InitializeCockpit();
+   InitializeWings();
+   InitializeEngines();
+   InitializeFlame();
+
+   UpdatePartsPosition();
+}
+
+
+
+//------------------------------------------------------------
+// UpdateRotation
+//------------------------------------------------------------
+
+void Player::UpdateRotation(const sf::Vector2f& direction)
+{
+  
+    // Calcula o ângulo da direção atual em radianos.
+    float angle =
+    std::atan2(direction.y, direction.x);
+
+
+    // Converte o ângulo de radianos para graus para utilizar
+    // na API de rotação da SFML.
+    float angleDegress = angle * 180.f / 3.14159265f;
+
+
+    // Rotaciona a nave para que ela aponte na direção do alvo.
+    //
+    // O deslocamento de 90 graus compensa a orientação
+    // inicial do triângulo.
+    m_Body.setRotation(sf::degrees(angleDegress + 90.f));
+}
+
+
+//------------------------------------------------------------
+// Shoot
+//------------------------------------------------------------
+
+void Player::Shoot()
+{
+    // Permite disparar somente quando o botão esquerdo do mouse
+    // estiver pressionado e o cooldown tiver terminado.
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Left) &&
+        m_CurrentShootCooldown <= 0.f)
+    {
+        // Solicita ao EntityManager a criação de um projétil
+        // na posição atual do Player e utilizando sua direção
+        // atual como direção inicial da bala.
+        m_EntityManager->SpawnBullet(
+            m_Body.getPosition(),
+            m_Forward);
+
+
+        // Reinicia o cooldown até que um novo disparo seja permitido.
+        m_CurrentShootCooldown = m_ShootCooldown;
+    }
+}
+
+
+//------------------------------------------------------------
+// RotateOffset
+//------------------------------------------------------------
+sf::Vector2f Player::RotateOffset(const sf::Vector2f& offset) const
+{
+    float angle = m_Body.getRotation().asRadians();
+
+    float cosAngle = std::cos(angle);
+    float sinAngle = std::sin(angle);
+
+    return 
+    {
+        offset.x * cosAngle - offset.y * sinAngle, 
+        offset.x * sinAngle + offset.y * cosAngle
+    };
+}
+
+
+//------------------------------------------------------------
+// UpdatePartsPosition
+//------------------------------------------------------------
+
+void Player::UpdatePartsPosition()
+{
+    sf::Vector2f position = m_Body.getPosition();
+    sf::Angle rotation = m_Body.getRotation();
+
+    m_Cockpit.setPosition(position + RotateOffset({0.f, -18.f}));
+
+    m_LeftWing.setPosition(position + RotateOffset({-18.f, 4.f}));
+    m_RightWing.setPosition(position + RotateOffset({18.f, 4.f}));
+
+    m_LeftEngine.setPosition(position + RotateOffset({-9.f, 22.f}));
+    m_RightEngine.setPosition(position + RotateOffset({9.f, 22.f}));
+
+    m_Flame.setPosition(position + RotateOffset({0.f, 35.f}));
+
+    m_Cockpit.setRotation(rotation);
+    m_LeftWing.setRotation(rotation);
+    m_RightWing.setRotation(rotation);
+    m_LeftEngine.setRotation(rotation);
+    m_RightEngine.setRotation(rotation);
+    m_Flame.setRotation(rotation);
+}
+
+
+//------------------------------------------------------------
+// InitializeBody
+//------------------------------------------------------------
+void Player::InitializeBody()
+{
+    m_Body.setPointCount(3);
+
+    // Triângulo apontando para cima.
+    m_Body.setPoint(0, { 0.f, -BODY_HEIGHT });
+    m_Body.setPoint(1, { -BODY_HALF_WIDTH, 20.f });
+    m_Body.setPoint(2, { BODY_HALF_WIDTH, 20.f });
+
+    m_Body.setFillColor(sf::Color(40, 170, 255));
+
+    // Contorno metálico.
+    m_Body.setOutlineThickness(3.f);
+    m_Body.setOutlineColor(sf::Color(170, 170, 170));
+
+    m_Body.setOrigin({0.f, 0.f});
+    m_Body.setPosition({640.f, 360.f});
+}
+
+
+
+//------------------------------------------------------------
+// InitializeCockpit
+//------------------------------------------------------------
+void Player::InitializeCockpit()
+{
+    m_Cockpit.setRadius(8.f);
+    m_Cockpit.setFillColor(sf::Color(180, 240, 255));
+    m_Cockpit.setOrigin({8.f, 8.f});
+}
+
+
+
+//------------------------------------------------------------
+// InitializeWings
+//------------------------------------------------------------
+void Player::InitializeWings()
+{
+    m_LeftWing.setSize({12.f, 28.f});
+    m_RightWing.setSize({12.f, 28.f});
+
+    m_LeftWing.setFillColor(sf::Color(90, 90, 90));
+    m_RightWing.setFillColor(sf::Color(90, 90, 90));
+
+    m_LeftWing.setOrigin({6.f, 14.f});
+    m_RightWing.setOrigin({6.f, 14.f});
+
+
+}
+
+
+
+//------------------------------------------------------------
+// InitializeEngines
+//------------------------------------------------------------
+void Player::InitializeEngines()
+{
+    m_LeftEngine.setSize({8.f, 12.f});
+    m_RightEngine.setSize({8.f, 12.f});
+
+    m_LeftEngine.setFillColor(sf::Color(60, 60, 60));
+    m_RightEngine.setFillColor(sf::Color(60, 60, 60));
+
+    m_LeftEngine.setOrigin({4.f, 6.f});
+    m_RightEngine.setOrigin({4.f, 6.f});
+}
+
+
+
+//------------------------------------------------------------
+// InitializeFlame
+//------------------------------------------------------------
+void Player::InitializeFlame()
+{
+    m_Flame.setPointCount(3);
+
+    m_Flame.setPoint(0, { 0.f, 12.f });
+    m_Flame.setPoint(1, { -6.f, 0.f });
+    m_Flame.setPoint(2, { 6.f, 0.f });
+
+    m_Flame.setFillColor(sf::Color(255, 120, 20));
+
+    m_Flame.setOrigin({0.f, 0.f});
 }
