@@ -89,6 +89,56 @@ public:
 
 private:
 
+
+    // Configura a representação visual da nave
+    void InitializeShape();
+
+    void InitializeBody();
+    void InitializeCockpit();
+    void InitializeWings();
+    void InitializeEngines();
+    void InitializeFlame();
+
+    // Atualiza a rotação da nave de acordo com a direção atual
+    void UpdateRotation(const sf::Vector2f& direction);
+
+    void UpdatePartsPosition();
+
+    // Controla o disparo do jogador.
+    void Shoot();
+
+
+    sf::Vector2f RotateOffset(const sf::Vector2f& offset) const;
+
+
+//========================================================
+// Componentes visuais da nave
+//========================================================
+    // Corpo principal da nave
+    sf::ConvexShape m_Body;
+ 
+    //Cabine
+    sf::CircleShape m_Cockpit;
+
+    // Asa esquerda
+    sf::RectangleShape  m_LeftWing;
+
+    // Asa direita
+    sf::RectangleShape  m_RightWing;
+
+    // Motor esquerdo
+    sf::RectangleShape  m_LeftEngine;
+
+    // Motor direito
+    sf::RectangleShape  m_RightEngine;
+
+    // Chama do propulsor 
+    sf::ConvexShape m_Flame;
+
+
+
+
+
     // Representação visual do jogador.
     sf::CircleShape m_Shape;
 
@@ -103,6 +153,8 @@ private:
 
     // Posição utilizada como alvo para o movimento do jogador.
     sf::Vector2f m_TargetPosition;
+    
+
 
 
     //========================================================

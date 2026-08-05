@@ -27,16 +27,23 @@ Enemy::Enemy(const sf::Vector2f& position)
       m_Health(100)
 {
     // Define o raio utilizado para representar o inimigo.
-    m_Shape.setRadius(20.f);
+    m_Shape.setRadius(22.f);
 
     // Ajusta a origem da forma para facilitar seu posicionamento.
-    m_Shape.setOrigin({25.f, 25.f});
+    m_Shape.setOrigin({22.f, 22.f});
 
     // Define a cor utilizada para representar o inimigo.
-    m_Shape.setFillColor(sf::Color::Red);
+    m_Shape.setFillColor(sf::Color(220, 50, 50));
 
     // Posiciona o inimigo no ponto recebido pelo construtor.
     m_Shape.setPosition(position);
+
+    // Adiciona um contorno para destacar visualmente o inimigo.
+    m_Shape.setOutlineThickness(3.f);
+
+    // Define a cor do contorno utilizada para aumentar a percepção
+    // de profundidade e separação do fundo.
+    m_Shape.setOutlineColor(sf::Color(255, 180, 180));
 }
 
 
