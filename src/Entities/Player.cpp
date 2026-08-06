@@ -25,12 +25,29 @@
 
 namespace
 {
+    // Constantes que definem as dimensões da nave e sua posição inicial
     constexpr float BODY_HEIGHT = 30.f;
     constexpr float BODY_HALF_WIDTH = 20.f;
+    constexpr float BODY_BASE_Y = 20.f;
 
     constexpr float COCKPIT_RADIUS = 8.f;
-
+    
+    constexpr sf::Vector2f WING_SIZE = { 12.f, 28.f };
+    constexpr sf::Vector2f ENGINE_SIZE = {8.f, 12.f};
+    
+    constexpr float FLAME_HEIGHT = 12.f;
+    constexpr float FLAME_HALF_WIDTH = 6.f;
+    
+    // Posição inicial do Player no centro da tela.
     constexpr sf::Vector2f PLAYER_START_POSITION = { 640.f, 360.f };
+
+    // Constantes que definem os offsets de cada componente da nave em relação ao corpo principal.
+    constexpr sf::Vector2f COCKPIT_OFFSET      = {  0.f, -18.f };
+    constexpr sf::Vector2f LEFT_WING_OFFSET    = {-18.f,   4.f };
+    constexpr sf::Vector2f RIGHT_WING_OFFSET   = { 18.f,   4.f };
+    constexpr sf::Vector2f LEFT_ENGINE_OFFSET  = { -9.f,  22.f };
+    constexpr sf::Vector2f RIGHT_ENGINE_OFFSET = {  9.f,  22.f };
+    constexpr sf::Vector2f FLAME_OFFSET        = {  0.f,  35.f };
 }
 
 
@@ -234,13 +251,16 @@ void Player::SetTargetPosition(
 
 void Player::InitializeShape()
 {
-  
+  // Inicializa cada componente visual da nave, definindo
+  // suas dimensões, cores e posições iniciais.
    InitializeBody();
    InitializeCockpit();
    InitializeWings();
    InitializeEngines();
    InitializeFlame();
 
+   // Posiciona todas as peças da nave de acordo com
+   // a posição inicial do corpo principal.
    UpdatePartsPosition();
 }
 
@@ -301,11 +321,14 @@ void Player::Shoot()
 //------------------------------------------------------------
 sf::Vector2f Player::RotateOffset(const sf::Vector2f& offset) const
 {
+    // Calcula o ângulo atual da nave em radianos.
     float angle = m_Body.getRotation().asRadians();
 
+    // Calcula o cosseno e seno do ângulo para realizar a rotação do offset.
     float cosAngle = std::cos(angle);
     float sinAngle = std::sin(angle);
 
+    // Aplica a rotação ao offset utilizando a matriz de rotação 2D.
     return 
     {
         offset.x * cosAngle - offset.y * sinAngle, 
@@ -320,19 +343,22 @@ sf::Vector2f Player::RotateOffset(const sf::Vector2f& offset) const
 
 void Player::UpdatePartsPosition()
 {
+    // Obtém a posição e rotação atuais do corpo principal da nave.
     sf::Vector2f position = m_Body.getPosition();
     sf::Angle rotation = m_Body.getRotation();
 
-    m_Cockpit.setPosition(position + RotateOffset({0.f, -18.f}));
+    // Atualiza a posição de cada componente da nave com base na posição e rotação do corpo principal.
+    m_Cockpit.setPosition(position + RotateOffset(COCKPIT_OFFSET));
 
-    m_LeftWing.setPosition(position + RotateOffset({-18.f, 4.f}));
-    m_RightWing.setPosition(position + RotateOffset({18.f, 4.f}));
+    m_LeftWing.setPosition(position + RotateOffset(LEFT_WING_OFFSET));
+    m_RightWing.setPosition(position + RotateOffset(RIGHT_WING_OFFSET));
 
-    m_LeftEngine.setPosition(position + RotateOffset({-9.f, 22.f}));
-    m_RightEngine.setPosition(position + RotateOffset({9.f, 22.f}));
+    m_LeftEngine.setPosition(position + RotateOffset(LEFT_ENGINE_OFFSET));
+    m_RightEngine.setPosition(position + RotateOffset(RIGHT_ENGINE_OFFSET));
 
-    m_Flame.setPosition(position + RotateOffset({0.f, 35.f}));
+    m_Flame.setPosition(position + RotateOffset(FLAME_OFFSET));
 
+    // Atualiza a rotação de cada componente da nave para que acompanhe a rotação do corpo principal.
     m_Cockpit.setRotation(rotation);
     m_LeftWing.setRotation(rotation);
     m_RightWing.setRotation(rotation);
@@ -351,8 +377,8 @@ void Player::InitializeBody()
 
     // Triângulo apontando para cima.
     m_Body.setPoint(0, { 0.f, -BODY_HEIGHT });
-    m_Body.setPoint(1, { -BODY_HALF_WIDTH, 20.f });
-    m_Body.setPoint(2, { BODY_HALF_WIDTH, 20.f });
+    m_Body.setPoint(1, { -BODY_HALF_WIDTH, BODY_BASE_Y });
+    m_Body.setPoint(2, { BODY_HALF_WIDTH, BODY_BASE_Y });
 
     m_Body.setFillColor(sf::Color(40, 170, 255));
 
@@ -361,7 +387,7 @@ void Player::InitializeBody()
     m_Body.setOutlineColor(sf::Color(170, 170, 170));
 
     m_Body.setOrigin({0.f, 0.f});
-    m_Body.setPosition({640.f, 360.f});
+    m_Body.setPosition(PLAYER_START_POSITION);
 }
 
 
@@ -371,9 +397,9 @@ void Player::InitializeBody()
 //------------------------------------------------------------
 void Player::InitializeCockpit()
 {
-    m_Cockpit.setRadius(8.f);
+    m_Cockpit.setRadius(COCKPIT_RADIUS);
     m_Cockpit.setFillColor(sf::Color(180, 240, 255));
-    m_Cockpit.setOrigin({8.f, 8.f});
+    m_Cockpit.setOrigin({COCKPIT_RADIUS, COCKPIT_RADIUS});
 }
 
 
@@ -383,8 +409,8 @@ void Player::InitializeCockpit()
 //------------------------------------------------------------
 void Player::InitializeWings()
 {
-    m_LeftWing.setSize({12.f, 28.f});
-    m_RightWing.setSize({12.f, 28.f});
+    m_LeftWing.setSize(WING_SIZE);
+    m_RightWing.setSize(WING_SIZE);
 
     m_LeftWing.setFillColor(sf::Color(90, 90, 90));
     m_RightWing.setFillColor(sf::Color(90, 90, 90));
@@ -402,8 +428,8 @@ void Player::InitializeWings()
 //------------------------------------------------------------
 void Player::InitializeEngines()
 {
-    m_LeftEngine.setSize({8.f, 12.f});
-    m_RightEngine.setSize({8.f, 12.f});
+    m_LeftEngine.setSize(ENGINE_SIZE);
+    m_RightEngine.setSize(ENGINE_SIZE);
 
     m_LeftEngine.setFillColor(sf::Color(60, 60, 60));
     m_RightEngine.setFillColor(sf::Color(60, 60, 60));
@@ -421,9 +447,9 @@ void Player::InitializeFlame()
 {
     m_Flame.setPointCount(3);
 
-    m_Flame.setPoint(0, { 0.f, 12.f });
-    m_Flame.setPoint(1, { -6.f, 0.f });
-    m_Flame.setPoint(2, { 6.f, 0.f });
+    m_Flame.setPoint(0, { 0.f, FLAME_HEIGHT });
+    m_Flame.setPoint(1, { -FLAME_HALF_WIDTH, 0.f });
+    m_Flame.setPoint(2, { FLAME_HALF_WIDTH, 0.f });
 
     m_Flame.setFillColor(sf::Color(255, 120, 20));
 
